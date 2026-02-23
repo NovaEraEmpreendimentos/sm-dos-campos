@@ -1,123 +1,99 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gilliard Cred - Simulador</title>
+    <title>Gilliard Cred - Simulador de Empréstimo</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-
 <body>
     <div class="container">
-        <!-- Header -->
         <header class="header">
             <div class="logo-container">
-                <h1>POINT CELL</h1>
-            </div><!--
-            <div class="header-buttons">
-                <button class="btn-secondary">
-                    <i class="fas fa-chart-line"></i>
-                    Crédito Especializado
-                </button>
-                <button class="btn-secondary">
-                    <i class="fas fa-trending-up"></i>
-                    Melhores Taxas
-                </button>
+                <div class="logo">
+                    <img src="logo.jpg" alt="Gilliard Cred" class="logo-image">
+                </div>
+                <h1>Gilliard Cred</h1>
+                <p class="subtitle">( serviços e soluções financeiras )</p>
             </div>
         </header>
 
-        <!-- Simulador -->
-            <section class="simulator-section">
-                <div class="simulator-card">
-                    <div class="card-header">
-                        <i class="fas fa-calculator"></i>
-                        <h2>Simulador</h2>
-                    </div>
-
-                    <div class="simulator-form">
-                        <div class="form-group">
-                            <label for="cardBrand">Bandeira do Cartão</label>
-                            <select id="cardBrand">
-                                <option value="master_visa">Master/Visa</option>
-                                <option value="outros">Outros</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="loanAmount">Valor a Receber</label>
-                            <input type="number" id="loanAmount" placeholder="Digite o valor" min="1" step="0.01">
-                        </div>
-
-
-
-                        <div class="form-group">
-                            <label for="installments">Número de Parcelas</label>
-                            <select id="installments">
-                                <option value="">Selecione as parcelas</option>
-                                <option value="1">1x</option>
-                                <option value="2">2x</option>
-                                <option value="3">3x</option>
-                                <option value="4">4x</option>
-                                <option value="5">5x</option>
-                                <option value="6">6x</option>
-                                <option value="7">7x</option>
-                                <option value="8">8x</option>
-                                <option value="9">9x</option>
-                                <option value="10">10x</option>
-                                <option value="11">11x</option>
-                                <option value="12">12x</option>
-                                <option value="13">13x</option>
-                                <option value="14">14x</option>
-                                <option value="15">15x</option>
-                                <option value="16">16x</option>
-                                <option value="17">17x</option>
-                                <option value="18">18x</option>
-                            </select>
-                        </div>
-
-                        <button class="btn-primary" id="generatePrint">
-                            <i class="fas fa-download"></i>
-                            Gerar Print
-                        </button>
+        <section class="simulator-card">
+            <div class="card-header">
+                <h2><i class="fas fa-calculator"></i> Simulador de Crédito</h2>
+                <p>Preencha os dados abaixo para simular as condições</p>
+            </div>
+            
+            <div class="simulator-form">
+                <div class="input-group">
+                    <label for="loanAmount">Valor do Empréstimo (R$)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <input type="text" id="loanAmount" placeholder="Ex: 5.000,00">
                     </div>
                 </div>
-            </section>
 
-            <!-- Tabela de Simulação -->
-            <section class="table-section">
-                <div class="table-card">
-                    <div class="table-header">
-                        <h3>Tabela de Simulação</h3>
+                <div class="input-group">
+                    <label for="loanType">Tipo de Crédito</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-tag"></i>
+                        <select id="loanType">
+                            <option value="abaixo5k">Até R$ 5.000,00</option>
+                            <option value="acima5k">Acima de R$ 5.000,00</option>
+                        </select>
                     </div>
+                </div>
 
-                    <div class="table-container">
-                        <table id="simulationTable">
-                            <thead>
-                                <tr>
-                                    <th>Parcelas</th>
-                                    <th>Taxa (%)</th>
-                                    <th>Valor a Cobrar (R$)</th>
-                                    <th>Valor da Parcela (R$)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody">
-                                <!-- Dados serão inseridos via JavaScript -->
+                <div class="input-group">
+                    <label for="installments">Parcelas Desejadas</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                        <select id="installments">
+                            </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button id="calculateBtn" class="btn-primary">
+                    <i class="fas fa-sync-alt"></i>
+                    Simular Agora
+                </button>
+                <button id="generatePrintBtn" class="btn-success" style="display: none;">
+                    <i class="fas fa-file-image"></i>
+                    Gerar Comprovante
+                </button>
+            </div>
+
+            <div id="result" class="result-area" style="display: none;">
+                <h3>Resultado da Simulação</h3>
+                <div class="table-container">
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Parcelas</th>
+                                <th>Taxa (%)</th>
+                                <th>Valor a Receber (R$)</th>
+                                <th>Valor da Parcela (R$)</th>
+                                <th>Valor a Cobrar (R$)</th>
+                                <th>Valor da Parcela (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
                             </tbody>
-                        </table>
-                    </div>
+                    </table>
                 </div>
-            </section>
+            </div>
+        </section>
     </div>
 
-    <!-- Modal para Print -->
     <div id="printModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <div id="printContent">
-                <!-- Conteúdo do print será gerado aqui -->
-            </div>
+                </div>
             <div class="modal-actions">
                 <button class="btn-primary" id="downloadPrint">
                     <i class="fas fa-download"></i>
@@ -134,5 +110,4 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="script.js"></script>
 </body>
-
 </html>

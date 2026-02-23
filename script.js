@@ -1,14 +1,14 @@
-// Tabelas de taxas permanecem as mesmas
-const taxasMasterVisa = {
-    1: 5.50, 2: 6.30, 3: 7.05, 4: 7.64, 5: 8.23, 6: 8.81,
-    7: 9.62, 8: 10.21, 9: 10.69, 10: 11.40, 11: 11.97, 12: 12.55,
-    13: 14.34, 14: 14.93, 15: 15.51, 16: 16.09, 17: 16.66, 18: 17.60
+// Tabelas de taxas
+const taxasAbaixo5k = {
+    1: 10.50, 2: 11.16, 3: 11.63, 4: 12.19, 5: 12.75, 6: 13.22,
+    7: 13.97, 8: 14.44, 9: 14.72, 10: 15.25, 11: 16.03, 12: 16.58,
+    13: 19.40, 14: 19.87, 15: 20.34, 16: 20.81, 17: 21.28, 18: 21.75
 };
 
-const taxasOutros = {
-    1: 6.30, 2: 6.45, 3: 7.20, 4: 8.00, 5: 8.80, 6: 9.50,
-    7: 10.00, 8: 10.80, 9: 11.50, 10: 12.30, 11: 12.96, 12: 13.00,
-    13: 15.00, 14: 15.65, 15: 16.25, 16: 16.90, 17: 17.50, 18: 18.50
+const taxasAcima5k = {
+    1: 10.25, 2: 10.91, 3: 11.38, 4: 11.94, 5: 12.50, 6: 12.97,
+    7: 13.73, 8: 14.20, 9: 14.48, 10: 14.53, 11: 15.87, 12: 16.25,
+    13: 17.07, 14: 17.56, 15: 18.04, 16: 18.53, 17: 19.01, 18: 19.50
 };
 
 // Elementos do DOM
@@ -16,14 +16,14 @@ const loanAmountInput = document.getElementById('loanAmount');
 const loanTypeSelect = document.getElementById('loanType');
 const installmentsSelect = document.getElementById('installments');
 const calculateBtn = document.getElementById('calculateBtn');
-const generatePrintBtn = document.getElementById('generatePrint');
-const resultContainer = document.getElementById('result');
+const generatePrintBtn = document.getElementById('generatePrintBtn');
+const resultArea = document.getElementById('result');
 const tableBody = document.getElementById('tableBody');
 const printModal = document.getElementById('printModal');
 const printContent = document.getElementById('printContent');
-const downloadPrintBtn = document.getElementById('downloadPrint');
+const closeBtn = document.querySelector('.close');
 const closePrintBtn = document.getElementById('closePrint');
-const closeModalX = document.querySelector('.close');
+const downloadPrintBtn = document.getElementById('downloadPrint');
 
 // Popular select de parcelas
 for (let i = 1; i <= 18; i++) {
@@ -33,126 +33,211 @@ for (let i = 1; i <= 18; i++) {
     installmentsSelect.appendChild(option);
 }
 
-// Formatar moeda
+// Formatação de moeda
 function formatCurrency(value) {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(value);
 }
 
-// Calcular taxas
-calculateBtn.addEventListener('click', () => {
-    let amountStr = loanAmountInput.value.replace('.', '').replace(',', '.');
-    let amount = parseFloat(amountStr);
-
+// Cálculo principal
+function calculate() {
+    const amountStr = loanAmountInput.value.replace(/\./g, '').replace(',', '.');
+    const amount = parseFloat(amountStr);
+    
     if (isNaN(amount) || amount <= 0) {
         alert('Por favor, insira um valor válido.');
         return;
     }
 
     const type = loanTypeSelect.value;
-    const taxas = type === 'master-visa' ? taxasMasterVisa : taxasOutros;
-    
+    const rates = type === 'abaixo5k' ? taxasAbaixo5k : taxasAcima5k;
+    const selectedInstallments = parseInt(installmentsSelect.value);
+
     tableBody.innerHTML = '';
     
-    for (let i = 1; i <= 18; i++) {
-        const taxa = taxas[i];
-        const valorTotal = amount / (1 - (taxa / 100));
-        const valorParcela = valorTotal / i;
+    Object.keys(rates).forEach(numInstallments => {
+        const rate = rates[numInstallments];
+        const num = parseInt(numInstallments);
+        
+        // Lógica de cálculo conforme solicitado
+        const valorReceber = amount;
+        const valorCobrar = amount / (1 - (rate / 100));
+        const parcelaReceber = valorReceber / num;
+        const parcelaCobrar = valorCobrar / num;
 
-        const row = `
-            <tr>
-                <td>${i}x</td>
-                <td>${taxa.toFixed(2)}%</td>
-                <td>${formatCurrency(valorTotal)}</td>
-                <td>${formatCurrency(valorParcela)}</td>
-            </tr>
+        const row = document.createElement('tr');
+        
+        // Destacar linha selecionada
+        if (num === selectedInstallments) {
+            row.classList.add('selected-row');
+        }
+
+        row.innerHTML = `
+            <td>${num}x</td>
+            <td>${rate.toFixed(2)}%</td>
+            <td>${formatCurrency(valorReceber)}</td>
+            <td>${formatCurrency(parcelaReceber)}</td>
+            <td class="highlight">${formatCurrency(valorCobrar)}</td>
+            <td class="highlight">${formatCurrency(parcelaCobrar)}</td>
         `;
-        tableBody.innerHTML += row;
-    }
+        tableBody.appendChild(row);
+    });
 
-    resultContainer.style.display = 'block';
-    generatePrintBtn.style.display = 'block';
-    resultContainer.scrollIntoView({ behavior: 'smooth' });
-});
-
-// Gerar Comprovante para Print
-generatePrintBtn.addEventListener('click', () => {
-    const amount = parseFloat(loanAmountInput.value.replace('.', '').replace(',', '.'));
-    const installments = parseInt(installmentsSelect.value);
-    const type = loanTypeSelect.value;
-    const taxas = type === 'master-visa' ? taxasMasterVisa : taxasOutros;
-    const taxa = taxas[installments];
+    resultArea.style.display = 'block';
+    generatePrintBtn.style.display = 'inline-flex';
     
-    const valorTotal = amount / (1 - (taxa / 100));
-    const valorParcela = valorTotal / installments;
-    const bandeira = type === 'master-visa' ? 'Mastercard / Visa' : 'Elo / Hiper / Amex';
+    // Scroll suave para o resultado
+    resultArea.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Gerar conteúdo para o print
+function generatePrintContent() {
+    const amountStr = loanAmountInput.value.replace(/\./g, '').replace(',', '.');
+    const amount = parseFloat(amountStr);
+    const type = loanTypeSelect.value;
+    const rates = type === 'abaixo5k' ? taxasAbaixo5k : taxasAcima5k;
+    const installments = parseInt(installmentsSelect.value);
+    const rate = rates[installments];
+    
+    const valorCobrar = amount / (1 - (rate / 100));
+    const parcelaCobrar = valorCobrar / installments;
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('pt-BR');
+    const timeStr = now.toLocaleTimeString('pt-BR');
 
     printContent.innerHTML = `
         <div class="print-header">
-            <h2 style="color: #1e3a8a; margin-bottom: 5px;">Gilliard Cred</h2>
-            <p style="font-size: 0.8rem; color: #666;">( serviços e soluções financeiras )</p>
-            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
-            <h3 style="color: #333;">Simulação de Crédito</h3>
+            <div class="print-logo">Gilliard Cred</div>
+            <div class="print-subtitle">( serviços e soluções financeiras )</div>
         </div>
         
         <div class="print-body">
-            <div class="print-item">
-                <span class="print-label">Valor Solicitado:</span>
-                <span class="print-value">${formatCurrency(amount)}</span>
-            </div>
-            <div class="print-item">
-                <span class="print-label">Bandeira:</span>
-                <span class="print-value">${bandeira}</span>
-            </div>
-            <div class="print-item">
-                <span class="print-label">Parcelamento:</span>
-                <span class="print-value">${installments}x</span>
-            </div>
-            <div class="print-highlight" style="margin-top: 20px; background: #f0f7ff; padding: 15px; border-radius: 8px; border: 1px solid #3b82f6;">
-                <div class="print-item" style="border:none;">
-                    <span class="print-label" style="color: #1e3a8a;">Valor da Parcela:</span>
-                    <span class="print-value" style="font-size: 1.4rem; color: #1e3a8a;">${formatCurrency(valorParcela)}</span>
+            <h4 style="text-align: center; margin-bottom: 20px; color: #1e3a8a;">SIMULAÇÃO DE CRÉDITO</h4>
+            
+            <div class="print-info-grid">
+                <div class="print-item">
+                    <span class="print-label">Data:</span>
+                    <span class="print-value">${dateStr} às ${timeStr}</span>
                 </div>
-                <div class="print-item" style="border:none;">
-                    <span class="print-label">Total a Cobrar:</span>
-                    <span class="print-value">${formatCurrency(valorTotal)}</span>
+                <div class="print-item">
+                    <span class="print-label">Valor Solicitado:</span>
+                    <span class="print-value">${formatCurrency(amount)}</span>
+                </div>
+                <div class="print-item">
+                    <span class="print-label">Plano:</span>
+                    <span class="print-value">${installments} parcelas</span>
+                </div>
+                <div class="print-item">
+                    <span class="print-label">Taxa aplicada:</span>
+                    <span class="print-value">${rate.toFixed(2)}%</span>
+                </div>
+            </div>
+
+            <div class="print-highlight" style="margin-top: 20px;">
+                <div class="print-item">
+                    <span class="print-label">VALOR TOTAL:</span>
+                    <span class="print-value" style="font-size: 1.2rem;">${formatCurrency(valorCobrar)}</span>
+                </div>
+                <div class="print-item">
+                    <span class="print-label">VALOR DA PARCELA:</span>
+                    <span class="print-value" style="font-size: 1.2rem;">${formatCurrency(parcelaCobrar)}</span>
                 </div>
             </div>
         </div>
 
-        <div class="print-contact" style="margin-top: 30px; text-align: center; font-size: 0.85rem; color: #555; border-top: 1px dashed #ccc; padding-top: 20px;">
-            <p><strong>Gilliard Cred</strong></p>
-            <p><i class="fab fa-instagram"></i> @gilliardcred | <i class="fas fa-phone"></i> (82) 9 9331-2300</p>
-            <p>R. Dr. Rômulo de almeida 144, Vizinho a Magazine Luiza</p>
+        <div class="print-contact">
+            <p><strong><i class="fab fa-instagram"></i> @gilliardcred</strong></p>
+            <p><i class="fas fa-phone"></i> (82) 9 9331-2300</p>
+            <p><i class="fas fa-map-marker-alt"></i> R. Dr. Rômulo de almeida 144, Vizinho a Magazine Luiza</p>
             <p>São Miguel dos Campos - AL</p>
-            <p style="margin-top: 10px; font-size: 0.7rem;">Simulação válida por 24 horas.</p>
+            <p style="font-size: 0.7rem; margin-top: 15px; opacity: 0.7;">* Simulação sujeita a análise de crédito.</p>
         </div>
     `;
 
     printModal.style.display = 'block';
-});
+}
 
-// Fechar Modal
-[closePrintBtn, closeModalX].forEach(btn => {
-    btn.onclick = () => printModal.style.display = 'none';
-});
+// Eventos
+calculateBtn.addEventListener('click', calculate);
+generatePrintBtn.addEventListener('click', generatePrintContent);
+
+closeBtn.onclick = () => printModal.style.display = 'none';
+closePrintBtn.onclick = () => printModal.style.display = 'none';
 
 window.onclick = (event) => {
-    if (event.target == printModal) printModal.style.display = 'none';
+    if (event.target == printModal) {
+        printModal.style.display = 'none';
+    }
 };
 
-// Baixar Imagem
 downloadPrintBtn.addEventListener('click', () => {
-    html2canvas(document.querySelector("#printContent")).then(canvas => {
+    const content = document.getElementById('printContent');
+    html2canvas(content, {
+        backgroundColor: '#ffffff',
+        scale: 2
+    }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `GilliardCred-Simulacao-${Date.now()}.png`;
+        link.download = `Simulacao_GilliardCred_${new Date().getTime()}.png`;
         link.href = canvas.toDataURL();
         link.click();
     });
 });
 
-// Máscara básica para o input
-loanAmountInput.addEventListener('input', function(e) {
-    let value = e.target.value.replace(/\D/g, "");
-    value = (value / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-    e.target.value = value;
+// Mascaras e UI
+document.addEventListener('DOMContentLoaded', () => {
+    // Efeito de entrada nos cards
+    const cards = document.querySelectorAll('.simulator-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 200);
+    });
+    
+    // Efeito de digitação no título
+    const title = document.querySelector('.header h1');
+    if (title) {
+        const text = title.textContent;
+        title.textContent = '';
+        let i = 0;
+        const typeWriter = () => {
+            if (i < text.length) {
+                title.textContent += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 100);
+            }
+        };
+        setTimeout(typeWriter, 500);
+    }
 });
+
+// Validação de entrada
+loanAmountInput.addEventListener('input', function() {
+    let value = this.value.replace(/[^\d.,]/g, '');
+    value = value.replace(',', '.');
+    this.value = value;
+});
+
+// Adicionar tooltips informativos
+function addTooltips() {
+    const tooltips = {
+        'loanAmount': 'Digite o valor que você deseja emprestar ou receber',
+        'loanType': 'Selecione a faixa de valor para aplicar as taxas corretas',
+        'installments': 'Escolha em quantas parcelas deseja dividir o pagamento'
+    };
+    
+    Object.keys(tooltips).forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.title = tooltips[id];
+        }
+    });
+}
+
+addTooltips();

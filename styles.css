@@ -30,212 +30,191 @@ body {
     margin-bottom: 30px;
 }
 
-.header h1 {
-    font-size: 3rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: -1px;
-    text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
-    margin-bottom: 0;
-}
-
-.header p {
-    font-size: 1rem;
-    opacity: 0.9;
-    letter-spacing: 1px;
-}
-
-.header-buttons {
-    display: flex;
+.logo {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
 }
 
-/* Card do Simulador */
-.simulator-section {
-    max-width: 800px;
-    margin: 0 auto;
+.logo-image {
+    max-width: 200px;
+    max-height: 80px;
+    object-fit: contain;
 }
 
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+/* Simulator Card */
 .simulator-card {
     background: #ffffff;
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     color: #1f2937;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .card-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     border-bottom: 2px solid #f3f4f6;
-    padding-bottom: 15px;
-}
-
-.card-header i {
-    font-size: 1.5rem;
-    color: #3b82f6;
+    padding-bottom: 20px;
 }
 
 .card-header h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #111827;
+    color: #1e3a8a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-/* Formulário */
+.card-header p {
+    color: #6b7280;
+    margin-top: 5px;
+}
+
 .simulator-form {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
     margin-bottom: 30px;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.form-group.full-width {
-    grid-column: span 2;
-}
-
-label {
-    font-size: 0.9rem;
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
     font-weight: 600;
-    color: #4b5563;
+    color: #374151;
 }
 
-input, select {
-    padding: 12px 16px;
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 15px;
+    color: #9ca3af;
+}
+
+.input-with-icon input, 
+.input-with-icon select {
+    width: 100%;
+    padding: 12px 12px 12px 45px;
     border: 2px solid #e5e7eb;
     border-radius: 10px;
     font-size: 1rem;
-    transition: all 0.3s ease;
+    transition: all 0.3s;
     outline: none;
 }
 
-input:focus, select:focus {
+.input-with-icon input:focus, 
+.input-with-icon select:focus {
     border-color: #3b82f6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Botões */
-.btn-primary {
-    background: #2563eb;
-    color: #ffffff;
-    border: none;
-    padding: 14px 28px;
+/* Buttons */
+.actions {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-primary, .btn-success, .btn-secondary {
+    padding: 12px 25px;
     border-radius: 10px;
     font-weight: 600;
-    font-size: 1rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 10px;
-    grid-column: span 2;
+    transition: all 0.3s;
+    border: none;
+}
+
+.btn-primary {
+    background: #1e3a8a;
+    color: white;
 }
 
 .btn-primary:hover {
-    background: #1d4ed8;
+    background: #1e40af;
     transform: translateY(-2px);
 }
 
 .btn-success {
-    background: #10b981;
-    color: #ffffff;
-    border: none;
-    padding: 14px 28px;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    background: #059669;
+    color: white;
 }
 
 .btn-success:hover {
-    background: #059669;
+    background: #047857;
+    transform: translateY(-2px);
 }
 
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #ffffff;
-    padding: 10px 20px;
-    border-radius: 30px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    background: #f3f4f6;
+    color: #374151;
 }
 
-.btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-/* Tabela de Resultados */
-.result-container {
+/* Table */
+.result-area {
     margin-top: 40px;
     animation: fadeIn 0.5s ease;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.table-responsive {
+.table-container {
     overflow-x: auto;
+    margin-top: 20px;
     border-radius: 12px;
     border: 1px solid #e5e7eb;
 }
 
-.table {
+table {
     width: 100%;
     border-collapse: collapse;
-    background: #ffffff;
+    text-align: left;
 }
 
-.table th {
+th {
     background: #f8fafc;
     padding: 15px;
-    text-align: left;
-    font-weight: 600;
     color: #4b5563;
+    font-weight: 600;
     border-bottom: 2px solid #e5e7eb;
 }
 
-.table td {
+td {
     padding: 15px;
     border-bottom: 1px solid #f3f4f6;
-    color: #1f2937;
 }
 
-.table tr:hover {
-    background: #f8fafc;
+.highlight {
+    color: #1e40af;
+    font-weight: 700;
 }
 
-/* Modal e Print Content */
+.selected-row {
+    background-color: #eff6ff;
+}
+
+/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -244,19 +223,18 @@ input:focus, select:focus {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(5px);
+    background-color: rgba(0,0,0,0.5);
+    overflow-y: auto;
 }
 
 .modal-content {
-    background-color: #ffffff;
+    background-color: #fefefe;
     margin: 5% auto;
-    padding: 0;
+    padding: 20px;
     border-radius: 15px;
     width: 90%;
     max-width: 500px;
     position: relative;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .close {
@@ -264,37 +242,40 @@ input:focus, select:focus {
     right: 20px;
     top: 15px;
     font-size: 28px;
-    font-weight: bold;
-    color: #9ca3af;
     cursor: pointer;
-    z-index: 10;
-}
-
-#printContent {
-    padding: 40px;
-    background: #ffffff;
+    color: #9ca3af;
 }
 
 .modal-actions {
-    padding: 20px;
-    background: #f9fafb;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
     gap: 10px;
 }
 
-/* Estilos internos do Print */
-.print-header {
-    text-align: center;
-    margin-bottom: 25px;
+/* Print Styling */
+#printContent {
+    background: white;
+    padding: 30px;
+    color: #1f2937;
 }
 
-.print-body {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
+.print-header {
+    text-align: center;
+    border-bottom: 2px solid #1e3a8a;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.print-logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1e3a8a;
+}
+
+.print-subtitle {
+    font-size: 0.9rem;
+    color: #6b7280;
 }
 
 .print-item {
@@ -315,10 +296,10 @@ input:focus, select:focus {
 }
 
 .print-highlight {
-    background: #f0f7ff;
+    background: #dbeafe;
     padding: 15px;
     border-radius: 8px;
-    border: 1px solid #3b82f6;
+    border: 1px solid #93c5fd;
 }
 
 .print-contact {
@@ -326,7 +307,7 @@ input:focus, select:focus {
     margin-top: 30px;
     padding-top: 20px;
     border-top: 1px solid #e5e7eb;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: #6b7280;
 }
 
@@ -335,21 +316,26 @@ input:focus, select:focus {
     .container {
         padding: 15px;
     }
-
+    
     .header h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
     }
-
+    
     .simulator-form {
         grid-template-columns: 1fr;
     }
     
-    .form-group.full-width, .btn-primary {
-        grid-column: span 1;
-    }
-
-    .header-buttons {
+    .actions {
         flex-direction: column;
-        align-items: center;
     }
+    
+    .btn-primary, .btn-success {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

@@ -11,9 +11,19 @@
 <body>
     <div class="container">
         <header class="header">
-           
+            <div class="logo-container">
                 <h1>Gilliard Cred</h1>
                 <p class="subtitle">( serviços e soluções financeiras )</p>
+            </div>
+            <div class="header-buttons">
+                <button class="btn-secondary">
+                    <i class="fas fa-chart-line"></i>
+                    Crédito Especializado
+                </button>
+                <button class="btn-secondary">
+                    <i class="fas fa-trending-up"></i>
+                    Melhores Taxas
+                </button>
             </div>
         </header>
 
@@ -65,7 +75,10 @@
             </div>
 
             <div id="result" class="result-area" style="display: none;">
-                <h3>Resultado da Simulação</h3>
+                <div class="table-header">
+                    <h3>Resultado da Simulação</h3>
+                    <div class="badge">Taxas Atualizadas</div>
+                </div>
                 <div class="table-container">
                     <table id="resultsTable">
                         <thead>
@@ -108,4 +121,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-

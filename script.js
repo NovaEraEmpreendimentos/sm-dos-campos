@@ -1,243 +1,155 @@
-// Tabelas de taxas
-const taxasAbaixo5k = {
-    1: 10.50, 2: 11.16, 3: 11.63, 4: 12.19, 5: 12.75, 6: 13.22,
-    7: 13.97, 8: 14.44, 9: 14.72, 10: 15.25, 11: 16.03, 12: 16.58,
-    13: 19.40, 14: 19.87, 15: 20.34, 16: 20.81, 17: 21.28, 18: 21.75
+// Tabela de taxas atualizada com 19x, 20x e 21x
+const taxas = {
+    1: 7.00, 2: 8.00, 3: 9.00, 4: 10.00, 5: 10.30, 6: 10.90,
+    7: 11.00, 8: 12.00, 9: 12.30, 10: 14.00, 11: 16.00, 12: 17.00,
+    13: 18.00, 14: 19.00, 15: 20.00, 16: 20.30, 17: 20.90, 18: 21.00,
+    19: 23.00, 20: 24.00, 21: 25.00
 };
 
-const taxasAcima5k = {
-    1: 10.25, 2: 10.91, 3: 11.38, 4: 11.94, 5: 12.50, 6: 12.97,
-    7: 13.73, 8: 14.20, 9: 14.48, 10: 14.53, 11: 15.87, 12: 16.25,
-    13: 17.07, 14: 17.56, 15: 18.04, 16: 18.53, 17: 19.01, 18: 19.50
-};
-
-// Elementos do DOM
 const loanAmountInput = document.getElementById('loanAmount');
-const loanTypeSelect = document.getElementById('loanType');
 const installmentsSelect = document.getElementById('installments');
-const calculateBtn = document.getElementById('calculateBtn');
-const generatePrintBtn = document.getElementById('generatePrintBtn');
-const resultArea = document.getElementById('result');
+const generatePrintBtn = document.getElementById('generatePrint');
 const tableBody = document.getElementById('tableBody');
 const printModal = document.getElementById('printModal');
 const printContent = document.getElementById('printContent');
-const closeBtn = document.querySelector('.close');
-const closePrintBtn = document.getElementById('closePrint');
 const downloadPrintBtn = document.getElementById('downloadPrint');
+const closePrintBtn = document.getElementById('closePrint');
+const closeModal = document.querySelector('.close');
 
-// Popular select de parcelas
-for (let i = 1; i <= 18; i++) {
-    const option = document.createElement('option');
-    option.value = i;
-    option.textContent = `${i}x`;
-    installmentsSelect.appendChild(option);
+let currentSimulation = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initInstallments();
+    updateTable();
+    setupEventListeners();
+});
+
+function initInstallments() {
+    installmentsSelect.innerHTML = '';
+    Object.keys(taxas).forEach(num => {
+        const option = document.createElement('option');
+        option.value = num;
+        option.textContent = `${num}x`;
+        installmentsSelect.appendChild(option);
+    });
 }
 
-// Formatação de moeda
+function setupEventListeners() {
+    loanAmountInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        value = (value / 100).toFixed(2);
+        e.target.value = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(value);
+        updateTable();
+    });
+
+    generatePrintBtn.addEventListener('click', showPrintModal);
+    closeModal.onclick = () => printModal.style.display = 'none';
+    closePrintBtn.onclick = () => printModal.style.display = 'none';
+    window.onclick = (event) => { if (event.target == printModal) printModal.style.display = 'none'; };
+    downloadPrintBtn.addEventListener('click', generatePDF);
+}
+
+function getRawValue(value) {
+    if (!value) return 0;
+    return parseFloat(value.replace(/\./g, '').replace(',', '.'));
+}
+
 function formatCurrency(value) {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(value);
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 }
 
-// Cálculo principal
-function calculate() {
-    const amountStr = loanAmountInput.value.replace(/\./g, '').replace(',', '.');
-    const amount = parseFloat(amountStr);
-    
-    if (isNaN(amount) || amount <= 0) {
-        alert('Por favor, insira um valor válido.');
-        return;
-    }
-
-    const type = loanTypeSelect.value;
-    const rates = type === 'abaixo5k' ? taxasAbaixo5k : taxasAcima5k;
-    const selectedInstallments = parseInt(installmentsSelect.value);
-
+function updateTable() {
+    const amount = getRawValue(loanAmountInput.value) || 0;
     tableBody.innerHTML = '';
     
-    Object.keys(rates).forEach(numInstallments => {
-        const rate = rates[numInstallments];
-        const num = parseInt(numInstallments);
-        
-        // Lógica de cálculo conforme solicitado
-        const valorReceber = amount;
+    Object.keys(taxas).forEach(num => {
+        const rate = taxas[num];
         const valorCobrar = amount / (1 - (rate / 100));
-        const parcelaReceber = valorReceber / num;
         const parcelaCobrar = valorCobrar / num;
+        const parcelaReceber = amount / num;
 
         const row = document.createElement('tr');
-        
-        // Destacar linha selecionada
-        if (num === selectedInstallments) {
-            row.classList.add('selected-row');
-        }
-
         row.innerHTML = `
             <td>${num}x</td>
             <td>${rate.toFixed(2)}%</td>
-            <td>${formatCurrency(valorReceber)}</td>
+            <td>${formatCurrency(amount)}</td>
             <td>${formatCurrency(parcelaReceber)}</td>
             <td class="highlight">${formatCurrency(valorCobrar)}</td>
             <td class="highlight">${formatCurrency(parcelaCobrar)}</td>
         `;
         tableBody.appendChild(row);
     });
-
-    resultArea.style.display = 'block';
-    generatePrintBtn.style.display = 'inline-flex';
-    
-    // Scroll suave para o resultado
-    resultArea.scrollIntoView({ behavior: 'smooth' });
 }
 
-// Gerar conteúdo para o print
-function generatePrintContent() {
-    const amountStr = loanAmountInput.value.replace(/\./g, '').replace(',', '.');
-    const amount = parseFloat(amountStr);
-    const type = loanTypeSelect.value;
-    const rates = type === 'abaixo5k' ? taxasAbaixo5k : taxasAcima5k;
-    const installments = parseInt(installmentsSelect.value);
-    const rate = rates[installments];
-    
-    const valorCobrar = amount / (1 - (rate / 100));
-    const parcelaCobrar = valorCobrar / installments;
+function showPrintModal() {
+    const amount = getRawValue(loanAmountInput.value);
+    if (!amount || amount <= 0) {
+        alert('Por favor, insira um valor válido.');
+        return;
+    }
 
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('pt-BR');
-    const timeStr = now.toLocaleTimeString('pt-BR');
+    const num = installmentsSelect.value;
+    const rate = taxas[num];
+    const valorCobrar = amount / (1 - (rate / 100));
+    const parcelaCobrar = valorCobrar / num;
+
+    currentSimulation = {
+        amount, num, rate, valorCobrar, parcelaCobrar,
+        date: new Date().toLocaleDateString('pt-BR'),
+        time: new Date().toLocaleTimeString('pt-BR')
+    };
 
     printContent.innerHTML = `
         <div class="print-header">
-            <div class="print-logo">Gilliard Cred</div>
+            <div class="print-logo" style="font-size: 24px; font-weight: bold; color: #1e3a8a;">Gilliard Cred</div>
             <div class="print-subtitle">( serviços e soluções financeiras )</div>
         </div>
-        
         <div class="print-body">
-            <h4 style="text-align: center; margin-bottom: 20px; color: #1e3a8a;">SIMULAÇÃO DE CRÉDITO</h4>
-            
             <div class="print-info-grid">
-                <div class="print-item">
-                    <span class="print-label">Data:</span>
-                    <span class="print-value">${dateStr} às ${timeStr}</span>
-                </div>
-                <div class="print-item">
-                    <span class="print-label">Valor Solicitado:</span>
-                    <span class="print-value">${formatCurrency(amount)}</span>
-                </div>
-                <div class="print-item">
-                    <span class="print-label">Plano:</span>
-                    <span class="print-value">${installments} parcelas</span>
-                </div>
-                <div class="print-item">
-                    <span class="print-label">Taxa aplicada:</span>
-                    <span class="print-value">${rate.toFixed(2)}%</span>
-                </div>
+                <div class="print-item"><span>Data:</span> <strong>${currentSimulation.date}</strong></div>
+                <div class="print-item"><span>Valor Solicitado:</span> <strong>${formatCurrency(amount)}</strong></div>
+                <div class="print-item"><span>Plano:</span> <strong>${num} parcelas</strong></div>
             </div>
-
-            <div class="print-highlight" style="margin-top: 20px;">
-                <div class="print-item">
-                    <span class="print-label">VALOR TOTAL:</span>
-                    <span class="print-value" style="font-size: 1.2rem;">${formatCurrency(valorCobrar)}</span>
-                </div>
-                <div class="print-item">
-                    <span class="print-label">VALOR DA PARCELA:</span>
-                    <span class="print-value" style="font-size: 1.2rem;">${formatCurrency(parcelaCobrar)}</span>
-                </div>
+            <div class="print-highlight" style="background: #dcfce7; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <div class="print-item"><span>VALOR DA PARCELA:</span> <strong>${formatCurrency(parcelaCobrar)}</strong></div>
+                <div class="print-item"><span>VALOR TOTAL:</span> <strong>${formatCurrency(valorCobrar)}</strong></div>
             </div>
         </div>
-
-        <div class="print-contact">
-            <p><strong><i class="fab fa-instagram"></i> gilliardcred</strong></p>
-            <p><i class="fas fa-phone"></i> (82) 9 9331-2300</p>
-            <p><i class="fas fa-map-marker-alt"></i> R. Dr. Rômulo de almeida 144, Vizinho a Magazine Luiza</p>
+        <div class="print-contact" style="text-align: center; margin-top: 20px; font-size: 13px;">
+            <p><strong>Instagram: @gilliardcred</strong></p>
+            <p>Telefone: (82) 9 9331-2300</p>
+            <p>R. Dr. Rômulo de almeida 144, Vizinho a Magazine Luiza</p>
             <p>São Miguel dos Campos - AL</p>
-            <p style="font-size: 0.7rem; margin-top: 15px; opacity: 0.7;">* Simulação sujeita a análise de crédito.</p>
         </div>
     `;
-
     printModal.style.display = 'block';
 }
 
-// Eventos
-calculateBtn.addEventListener('click', calculate);
-generatePrintBtn.addEventListener('click', generatePrintContent);
-
-closeBtn.onclick = () => printModal.style.display = 'none';
-closePrintBtn.onclick = () => printModal.style.display = 'none';
-
-window.onclick = (event) => {
-    if (event.target == printModal) {
-        printModal.style.display = 'none';
-    }
-};
-
-downloadPrintBtn.addEventListener('click', () => {
-    const content = document.getElementById('printContent');
-    html2canvas(content, {
-        backgroundColor: '#ffffff',
-        scale: 2
-    }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = `Simulacao_GilliardCred_${new Date().getTime()}.png`;
-        link.href = canvas.toToDataURL();
-        link.click();
-    });
-});
-
-// Mascaras e UI
-document.addEventListener('DOMContentLoaded', () => {
-    // Efeito de entrada nos cards
-    const cards = document.querySelectorAll('.simulator-card');
-    cards.forEach((card, index) => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        setTimeout(() => {
-            card.style.transition = 'all 0.6s ease';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, index * 200);
-    });
+function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
     
-    // Efeito de digitação no título
-    const title = document.querySelector('.header h1');
-    if (title) {
-        const text = title.textContent;
-        title.textContent = '';
-        let i = 0;
-        const typeWriter = () => {
-            if (i < text.length) {
-                title.textContent += text.charAt(i);
-                i++;
-                setTimeout(typeWriter, 100);
-            }
-        };
-        setTimeout(typeWriter, 500);
-    }
-});
-
-// Validação de entrada
-loanAmountInput.addEventListener('input', function() {
-    let value = this.value.replace(/[^\d.,]/g, '');
-    value = value.replace(',', '.');
-    this.value = value;
-});
-
-// Adicionar tooltips informativos
-function addTooltips() {
-    const tooltips = {
-        'loanAmount': 'Digite o valor que você deseja emprestar ou receber',
-        'loanType': 'Selecione a faixa de valor para aplicar as taxas corretas',
-        'installments': 'Escolha em quantas parcelas deseja dividir o pagamento'
-    };
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.setTextColor(30, 58, 138);
+    doc.text("Gilliard Cred", 105, 30, { align: "center" });
     
-    Object.keys(tooltips).forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.title = tooltips[id];
-        }
-    });
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text("( serviços e soluções financeiras )", 105, 38, { align: "center" });
+    
+    doc.line(20, 45, 190, 45);
+    doc.text(`Data: ${currentSimulation.date} - Valor: ${formatCurrency(currentSimulation.amount)}`, 20, 60);
+    doc.text(`Plano escolhido: ${currentSimulation.num} parcelas`, 20, 70);
+    
+    doc.setFillColor(220, 252, 231);
+    doc.rect(20, 80, 170, 25, 'F');
+    doc.text(`VALOR DA PARCELA: ${formatCurrency(currentSimulation.parcelaCobrar)}`, 105, 90, { align: "center" });
+    doc.text(`TOTAL A PAGAR: ${formatCurrency(currentSimulation.valorCobrar)}`, 105, 100, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.text("Instagram: @gilliardcred | WhatsApp: (82) 9 9331-2300", 105, 130, { align: "center" });
+    doc.text("Endereço: R. Dr. Rômulo de almeida 144, São Miguel dos Campos - AL", 105, 136, { align: "center" });
+
+    doc.save(`Simulacao_GilliardCred.pdf`);
 }
-
-addTooltips();

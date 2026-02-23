@@ -1,4 +1,3 @@
-// Tabela de taxas atualizada com 19x, 20x e 21x
 const taxas = {
     1: 7.00, 2: 8.00, 3: 9.00, 4: 10.00, 5: 10.30, 6: 10.90,
     7: 11.00, 8: 12.00, 9: 12.30, 10: 14.00, 11: 16.00, 12: 17.00,
@@ -37,6 +36,11 @@ function initInstallments() {
 function setupEventListeners() {
     loanAmountInput.addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
+        if (value === '') {
+            e.target.value = '';
+            updateTable();
+            return;
+        }
         value = (value / 100).toFixed(2);
         e.target.value = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(value);
         updateTable();
@@ -100,23 +104,21 @@ function showPrintModal() {
     };
 
     printContent.innerHTML = `
-        <div class="print-header">
-            <div class="print-logo" style="font-size: 24px; font-weight: bold; color: #1e3a8a;">Gilliard Cred</div>
-            <div class="print-subtitle">( serviços e soluções financeiras )</div>
+        <div class="print-header" style="text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px;">
+            <div style="font-size: 24px; font-weight: bold; color: #1e3a8a;">Gilliard Cred</div>
+            <div style="font-size: 14px; color: #666;">( serviços e soluções financeiras )</div>
         </div>
-        <div class="print-body">
-            <div class="print-info-grid">
-                <div class="print-item"><span>Data:</span> <strong>${currentSimulation.date}</strong></div>
-                <div class="print-item"><span>Valor Solicitado:</span> <strong>${formatCurrency(amount)}</strong></div>
-                <div class="print-item"><span>Plano:</span> <strong>${num} parcelas</strong></div>
-            </div>
-            <div class="print-highlight" style="background: #dcfce7; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                <div class="print-item"><span>VALOR DA PARCELA:</span> <strong>${formatCurrency(parcelaCobrar)}</strong></div>
-                <div class="print-item"><span>VALOR TOTAL:</span> <strong>${formatCurrency(valorCobrar)}</strong></div>
+        <div class="print-body" style="padding: 20px 0;">
+            <p><strong>Data:</strong> ${currentSimulation.date}</p>
+            <p><strong>Valor Solicitado:</strong> ${formatCurrency(amount)}</p>
+            <p><strong>Plano:</strong> ${num} parcelas</p>
+            <div style="background: #dcfce7; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #bbf7d0;">
+                <p><strong>VALOR DA PARCELA:</strong> ${formatCurrency(parcelaCobrar)}</p>
+                <p><strong>VALOR TOTAL:</strong> ${formatCurrency(valorCobrar)}</p>
             </div>
         </div>
-        <div class="print-contact" style="text-align: center; margin-top: 20px; font-size: 13px;">
-            <p><strong>Instagram: @gilliardcred</strong></p>
+        <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #444; border-top: 1px solid #eee; padding-top: 10px;">
+            <p><strong>Instagram: gilliardcred</strong></p>
             <p>Telefone: (82) 9 9331-2300</p>
             <p>R. Dr. Rômulo de almeida 144, Vizinho a Magazine Luiza</p>
             <p>São Miguel dos Campos - AL</p>
@@ -128,28 +130,22 @@ function showPrintModal() {
 function generatePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    
     doc.setFont("helvetica", "bold");
     doc.setFontSize(22);
     doc.setTextColor(30, 58, 138);
     doc.text("Gilliard Cred", 105, 30, { align: "center" });
-    
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
     doc.text("( serviços e soluções financeiras )", 105, 38, { align: "center" });
-    
     doc.line(20, 45, 190, 45);
-    doc.text(`Data: ${currentSimulation.date} - Valor: ${formatCurrency(currentSimulation.amount)}`, 20, 60);
-    doc.text(`Plano escolhido: ${currentSimulation.num} parcelas`, 20, 70);
-    
+    doc.text(`Valor Solicitado: ${formatCurrency(currentSimulation.amount)}`, 20, 60);
+    doc.text(`Plano: ${currentSimulation.num} parcelas`, 20, 70);
     doc.setFillColor(220, 252, 231);
     doc.rect(20, 80, 170, 25, 'F');
     doc.text(`VALOR DA PARCELA: ${formatCurrency(currentSimulation.parcelaCobrar)}`, 105, 90, { align: "center" });
     doc.text(`TOTAL A PAGAR: ${formatCurrency(currentSimulation.valorCobrar)}`, 105, 100, { align: "center" });
-
     doc.setFontSize(10);
-    doc.text("Instagram: @gilliardcred | WhatsApp: (82) 9 9331-2300", 105, 130, { align: "center" });
-    doc.text("Endereço: R. Dr. Rômulo de almeida 144, São Miguel dos Campos - AL", 105, 136, { align: "center" });
-
+    doc.text("Instagram: gilliardcred | WhatsApp: (82) 9 9331-2300", 105, 130, { align: "center" });
+    doc.text("São Miguel dos Campos - AL", 105, 136, { align: "center" });
     doc.save(`Simulacao_GilliardCred.pdf`);
 }

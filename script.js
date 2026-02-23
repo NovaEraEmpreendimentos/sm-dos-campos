@@ -149,7 +149,7 @@ function generatePrintContent() {
         </div>
 
         <div class="print-contact">
-            <p><strong><i class="fab fa-instagram"></i> @gilliardcred</strong></p>
+            <p><strong><i class="fab fa-instagram"></i> gilliardcred</strong></p>
             <p><i class="fas fa-phone"></i> (82) 9 9331-2300</p>
             <p><i class="fas fa-map-marker-alt"></i> R. Dr. Rômulo de almeida 144, Vizinho a Magazine Luiza</p>
             <p>São Miguel dos Campos - AL</p>
@@ -181,7 +181,7 @@ downloadPrintBtn.addEventListener('click', () => {
     }).then(canvas => {
         const link = document.createElement('a');
         link.download = `Simulacao_GilliardCred_${new Date().getTime()}.png`;
-        link.href = canvas.toDataURL();
+        link.href = canvas.toToDataURL();
         link.click();
     });
 });

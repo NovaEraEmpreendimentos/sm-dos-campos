@@ -12,59 +12,88 @@
 
 <body>
     <div class="container">
+        <!-- Header -->
         <header class="header">
             <div class="logo-container">
-                <h1>Gilliard Cred</h1>
-                <p style="color: #ffffff; font-size: 1rem; margin-top: 8px; font-weight: 300; letter-spacing: 1px;">
-                    ( serviços e soluções financeiras )
-                </p>
+                <h1>POINT CELL</h1>
+            </div><!--
+            <div class="header-buttons">
+                <button class="btn-secondary">
+                    <i class="fas fa-chart-line"></i>
+                    Crédito Especializado
+                </button>
+                <button class="btn-secondary">
+                    <i class="fas fa-trending-up"></i>
+                    Melhores Taxas
+                </button>
             </div>
         </header>
 
-        <section class="simulator-section">
-            <div class="simulator-card">
-                <div class="card-header">
-                    <i class="fas fa-calculator"></i>
-                    <h2>Simulador</h2>
-                </div>
-
-                <div class="simulator-form">
-                    <div class="form-group">
-                        <label for="loanAmount">Valor do Empréstimo (R$)</label>
-                        <input type="text" id="loanAmount" placeholder="Ex: 1.000,00">
+        <!-- Simulador -->
+            <section class="simulator-section">
+                <div class="simulator-card">
+                    <div class="card-header">
+                        <i class="fas fa-calculator"></i>
+                        <h2>Simulador</h2>
                     </div>
 
-                    <div class="form-group">
-                        <label for="loanType">Bandeira do Cartão</label>
-                        <select id="loanType">
-                            <option value="master-visa">Mastercard / Visa</option>
-                            <option value="outros">Elo / Hiper / Amex</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="installments">Parcelas</label>
-                        <select id="installments">
+                    <div class="simulator-form">
+                        <div class="form-group">
+                            <label for="cardBrand">Bandeira do Cartão</label>
+                            <select id="cardBrand">
+                                <option value="master_visa">Master/Visa</option>
+                                <option value="outros">Outros</option>
                             </select>
-                    </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="loanAmount">Valor a Receber</label>
+                            <input type="number" id="loanAmount" placeholder="Digite o valor" min="1" step="0.01">
+                        </div>
 
-                    <button class="btn-primary" id="calculateBtn">
-                        <i class="fas fa-sync-alt"></i>
-                        Calcular
-                    </button>
-                    
-                    <button class="btn-success" id="generatePrint" style="margin-top: 10px; width: 100%; display: none;">
-                        <i class="fas fa-camera"></i>
-                        Gerar Comprovante
-                    </button>
+
+
+                        <div class="form-group">
+                            <label for="installments">Número de Parcelas</label>
+                            <select id="installments">
+                                <option value="">Selecione as parcelas</option>
+                                <option value="1">1x</option>
+                                <option value="2">2x</option>
+                                <option value="3">3x</option>
+                                <option value="4">4x</option>
+                                <option value="5">5x</option>
+                                <option value="6">6x</option>
+                                <option value="7">7x</option>
+                                <option value="8">8x</option>
+                                <option value="9">9x</option>
+                                <option value="10">10x</option>
+                                <option value="11">11x</option>
+                                <option value="12">12x</option>
+                                <option value="13">13x</option>
+                                <option value="14">14x</option>
+                                <option value="15">15x</option>
+                                <option value="16">16x</option>
+                                <option value="17">17x</option>
+                                <option value="18">18x</option>
+                            </select>
+                        </div>
+
+                        <button class="btn-primary" id="generatePrint">
+                            <i class="fas fa-download"></i>
+                            Gerar Print
+                        </button>
+                    </div>
                 </div>
+            </section>
 
-                <div id="result" class="result-container" style="display: none;">
+            <!-- Tabela de Simulação -->
+            <section class="table-section">
+                <div class="table-card">
                     <div class="table-header">
-                        <h3>Resultados da Simulação</h3>
+                        <h3>Tabela de Simulação</h3>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table">
+
+                    <div class="table-container">
+                        <table id="simulationTable">
                             <thead>
                                 <tr>
                                     <th>Parcelas</th>
@@ -74,19 +103,21 @@
                                 </tr>
                             </thead>
                             <tbody id="tableBody">
-                                </tbody>
+                                <!-- Dados serão inseridos via JavaScript -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
     </div>
 
+    <!-- Modal para Print -->
     <div id="printModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <div id="printContent">
-                </div>
+                <!-- Conteúdo do print será gerado aqui -->
+            </div>
             <div class="modal-actions">
                 <button class="btn-primary" id="downloadPrint">
                     <i class="fas fa-download"></i>
@@ -103,4 +134,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

@@ -27,73 +27,60 @@
             </div>
         </header>
 
-        <section class="simulator-card">
-            <div class="card-header">
-                <h2><i class="fas fa-calculator"></i> Simulador de Crédito</h2>
-                <p>Preencha os dados abaixo para simular as condições</p>
-            </div>
-            
-            <div class="simulator-form">
-                <div class="input-group">
-                    <label for="loanAmount">Valor do Empréstimo (R$)</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                        <input type="text" id="loanAmount" placeholder="Ex: 5.000,00">
+        <section class="simulator-section">
+            <div class="simulator-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-calculator"></i> Simulador de Crédito</h2>
+                    <p>Insira o valor para ver as opções de parcelamento</p>
+                </div>
+                
+                <div class="simulator-form">
+                    <div class="input-group">
+                        <label for="loanAmount">Valor do Empréstimo (R$)</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <input type="text" id="loanAmount" placeholder="Ex: 5.000,00">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="installments">Parcelas para o Comprovante</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                            <select id="installments">
+                                </select>
+                        </div>
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <label for="loanType">Tipo de Crédito</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-tag"></i>
-                        <select id="loanType">
-                            <option value="abaixo5k">Até R$ 5.000,00</option>
-                            <option value="acima5k">Acima de R$ 5.000,00</option>
-                        </select>
+                <div class="actions">
+                    <button id="generatePrint" class="btn-success">
+                        <i class="fas fa-file-pdf"></i>
+                        Gerar Comprovante
+                    </button>
+                </div>
+
+                <div id="result" class="result-area">
+                    <div class="table-header">
+                        <h3>Tabela de Coeficientes</h3>
+                        <div class="badge">Taxas Atualizadas</div>
                     </div>
-                </div>
-
-                <div class="input-group">
-                    <label for="installments">Parcelas Desejadas</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-calendar-alt"></i>
-                        <select id="installments">
-                            </select>
+                    <div class="table-container">
+                        <table id="resultsTable">
+                            <thead>
+                                <tr>
+                                    <th>Parcelas</th>
+                                    <th>Taxa (%)</th>
+                                    <th>Valor a Receber (R$)</th>
+                                    <th>Valor da Parcela (R$)</th>
+                                    <th>Valor a Cobrar (R$)</th>
+                                    <th>Valor da Parcela (R$)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                </tbody>
+                        </table>
                     </div>
-                </div>
-            </div>
-
-            <div class="actions">
-                <button id="calculateBtn" class="btn-primary">
-                    <i class="fas fa-sync-alt"></i>
-                    Simular Agora
-                </button>
-                <button id="generatePrintBtn" class="btn-success" style="display: none;">
-                    <i class="fas fa-file-image"></i>
-                    Gerar Comprovante
-                </button>
-            </div>
-
-            <div id="result" class="result-area" style="display: none;">
-                <div class="table-header">
-                    <h3>Resultado da Simulação</h3>
-                    <div class="badge">Taxas Atualizadas</div>
-                </div>
-                <div class="table-container">
-                    <table id="resultsTable">
-                        <thead>
-                            <tr>
-                                <th>Parcelas</th>
-                                <th>Taxa (%)</th>
-                                <th>Valor a Receber (R$)</th>
-                                <th>Valor da Parcela (R$)</th>
-                                <th>Valor a Cobrar (R$)</th>
-                                <th>Valor da Parcela (R$)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            </tbody>
-                    </table>
                 </div>
             </div>
         </section>
@@ -107,7 +94,7 @@
             <div class="modal-actions">
                 <button class="btn-primary" id="downloadPrint">
                     <i class="fas fa-download"></i>
-                    Baixar Imagem
+                    Baixar PDF
                 </button>
                 <button class="btn-secondary" id="closePrint">
                     <i class="fas fa-times"></i>
@@ -117,7 +104,7 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

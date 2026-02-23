@@ -1,7 +1,7 @@
 const taxas = {
-    1: 7.00, 2: 8.00, 3: 9.00, 4: 10.00, 5: 10.30, 6: 10.90,
-    7: 11.00, 8: 12.00, 9: 12.30, 10: 14.00, 11: 16.00, 12: 17.00,
-    13: 18.00, 14: 19.00, 15: 20.00, 16: 20.30, 17: 20.90, 18: 21.00,
+    1: 10.50, 2: 11.16, 3: 11.63, 4: 12.19, 5: 12.75, 6: 13.22,
+    7: 13.97, 8: 14.44, 9: 14.72, 10: 15.25, 11: 16.03, 12: 16.58,
+    13: 19.40, 14: 19.87, 15: 20.34, 16: 20.81, 17: 21.28, 18: 21.75,
     19: 23.00, 20: 24.00, 21: 25.00
 };
 
@@ -12,8 +12,6 @@ const tableBody = document.getElementById('tableBody');
 const printModal = document.getElementById('printModal');
 const printContent = document.getElementById('printContent');
 const downloadPrintBtn = document.getElementById('downloadPrint');
-
-let currentSimulation = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     initInstallments();
@@ -60,7 +58,7 @@ function updateTable() {
     Object.keys(taxas).forEach(num => {
         const rate = taxas[num];
         const valorCobrar = amount / (1 - (rate / 100));
-        const row = document.createElement('tr');
+        row = document.createElement('tr');
         row.innerHTML = `
             <td>${num}x</td><td>${rate.toFixed(2)}%</td>
             <td>${formatCurrency(amount)}</td><td>${formatCurrency(amount/num)}</td>
@@ -77,31 +75,31 @@ function showPrintModal() {
 
     const num = installmentsSelect.value;
     const rate = taxas[num];
-    const valorCobrar = amount / (1 - (rate / 100));
-    const parcela = valorCobrar / num;
+    const valorCobrarParaReceberX = amount / (1 - (rate / 100));
+    const valorReceberSePassarX = amount * (1 - (rate / 100));
 
-    currentSimulation = { amount, num, valorCobrar, parcela, date: new Date().toLocaleDateString('pt-BR') };
-
-    // Todo o texto em negrito (font-weight: bold)
     printContent.innerHTML = `
-        <div style="text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; font-weight: bold;">
+        <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; font-weight: bold; color: #000;">
             <div style="font-size: 24px;">Gilliard Cred</div>
             <div style="font-size: 14px;">( serviços e soluções financeiras )</div>
         </div>
-        <div style="padding: 20px 0; font-weight: bold; line-height: 1.8;">
-            <p>DATA: ${currentSimulation.date}</p>
-            <p>VALOR SOLICITADO: ${formatCurrency(amount)}</p>
-            <p>PLANO: ${num} PARCELAS</p>
-            <div style="background: #dcfce7; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #bbf7d0;">
-                <p>VALOR DA PARCELA: ${formatCurrency(parcela)}</p>
-                <p>VALOR TOTAL A PAGAR: ${formatCurrency(valorCobrar)}</p>
+        <div style="padding: 20px 0; font-weight: bold; line-height: 1.6; color: #000;">
+            <p style="margin-bottom: 10px;">DATA: ${new Date().toLocaleDateString('pt-BR')}</p>
+            <div style="border: 1px solid #000; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+                <p>SE VOCÊ PASSAR: ${formatCurrency(amount)}</p>
+                <p>VOCÊ RECEBE: ${formatCurrency(valorReceberSePassarX)}</p>
+                <p>EM ${num}x DE ${formatCurrency(amount/num)}</p>
+            </div>
+            <div style="border: 1px solid #000; padding: 10px; border-radius: 5px; background: #f9f9f9;">
+                <p>SE VOCÊ QUER RECEBER: ${formatCurrency(amount)}</p>
+                <p>VOCÊ PASSA: ${formatCurrency(valorCobrarParaReceberX)}</p>
+                <p>EM ${num}x DE ${formatCurrency(valorCobrarParaReceberX/num)}</p>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 10px; font-size: 12px; border-top: 1px solid #eee; padding-top: 10px; font-weight: bold;">
-            <p>INSTAGRAM: @GILLIARDCRED</p>
-            <p>TELEFONE: (82) 9 9331-2300</p>
-            <p>R. DR. RÔMULO DE ALMEIDA 144, VIZINHO A MAGAZINE LUIZA</p>
-            <p>SÃO MIGUEL DOS CAMPOS - AL</p>
+        <div style="text-align: center; margin-top: 10px; font-size: 11px; border-top: 1px solid #000; padding-top: 10px; font-weight: bold; color: #000;">
+            <p>Telefone: (82) 9 9330-1661 | @gilliardfinanceira</p>
+            <p>Endereço: R. Dr. Rômulo de almeida 02, Próx aos Correios</p>
+            <p>São Miguel dos Campos - AL</p>
         </div>
     `;
     printModal.style.display = 'block';
@@ -110,18 +108,11 @@ function showPrintModal() {
 function generatePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    doc.setFont("helvetica", "bold"); // PDF em negrito
-    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0,0,0);
     doc.text("Gilliard Cred", 105, 30, { align: "center" });
-    doc.setFontSize(12);
-    doc.text("( serviços e soluções financeiras )", 105, 38, { align: "center" });
-    doc.line(20, 45, 190, 45);
-    doc.text(`VALOR SOLICITADO: ${formatCurrency(currentSimulation.amount)}`, 20, 60);
-    doc.text(`PLANO: ${currentSimulation.num} PARCELAS`, 20, 70);
-    doc.setFillColor(220, 252, 231);
-    doc.rect(20, 80, 170, 25, 'F');
-    doc.text(`VALOR DA PARCELA: ${formatCurrency(currentSimulation.parcela)}`, 105, 90, { align: "center" });
-    doc.text(`TOTAL A PAGAR: ${formatCurrency(currentSimulation.valorCobrar)}`, 105, 100, { align: "center" });
-    doc.text("INSTAGRAM: @GILLIARDCRED | WHATSAPP: (82) 9 9331-2300", 105, 130, { align: "center" });
-    doc.save(`Simulacao_GilliardCred.pdf`);
+    doc.setFontSize(10);
+    doc.text("Comprovante de Simulação", 105, 40, { align: "center" });
+    doc.text("Telefone: (82) 9 9330-1661 | @gilliardfinanceira", 105, 130, { align: "center" });
+    doc.save(`Simulacao_Gilliard.pdf`);
 }

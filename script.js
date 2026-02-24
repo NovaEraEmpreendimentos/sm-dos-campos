@@ -75,34 +75,50 @@ function showPrintModal() {
     const valorCobrarParaReceberX = amount / (1 - taxa / 100);
 
     printContent.innerHTML = `
-        <div style="font-family: Arial; border: 1px solid #ccc; padding: 15px; border-radius: 10px;">
-            <h2 style="text-align: center; color: #1e40af;">Gilliard Cred</h2>
-            <hr>
-            <p><b>Simulação de Crédito</b></p>
-            <p>Data: ${new Date().toLocaleDateString('pt-BR')}</p>
-            <div style="background: #f3f4f6; padding: 10px; margin: 10px 0; border-radius: 5px;">
-                <p>SE VOCÊ PASSAR: <b>${formatCurrency(amount)}</b></p>
-                <p>VOCÊ RECEBE: <b>${formatCurrency(valorReceberSePassarX)}</b></p>
-                <p>EM ${num}x DE ${formatCurrency(amount/num)}</p>
+        <div id="capture-area" style="padding: 20px; color: #000; font-family: sans-serif;">
+            <div style="text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 15px;">
+                <h2 style="margin: 0; color: #1e3a8a;">Gilliard Cred</h2>
+                <p style="margin: 5px 0; font-size: 12px;">Soluções Financeiras</p>
             </div>
-            <div style="background: #f3f4f6; padding: 10px; margin: 10px 0; border-radius: 5px;">
-                <p>SE VOCÊ QUER RECEBER: <b>${formatCurrency(amount)}</b></p>
-                <p>VOCÊ PASSA: <b>${formatCurrency(valorCobrarParaReceberX)}</b></p>
-                <p>EM ${num}x DE ${formatCurrency(valorCobrarParaReceberX/num)}</p>
+            
+            <div style="background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e2e8f0;">
+                <p style="font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 5px;">OPÇÃO: SE VOCÊ PASSAR O VALOR</p>
+                <p>Valor na Máquina: <strong>${formatCurrency(amount)}</strong></p>
+                <p>Você Recebe: <strong style="color: #15803d;">${formatCurrency(valorReceberSePassarX)}</strong></p>
+                <p>Parcelas: <strong>${num}x de ${formatCurrency(amount/num)}</strong></p>
             </div>
-            <p style="text-align: center; font-size: 11px;">(82) 9 9330-1661 | São Miguel dos Campos - AL</p>
+
+            <div style="background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #e2e8f0;">
+                <p style="font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 5px;">OPÇÃO: SE VOCÊ QUER RECEBER LÍQUIDO</p>
+                <p>Valor Desejado: <strong>${formatCurrency(amount)}</strong></p>
+                <p>Passar na Máquina: <strong style="color: #b91c1c;">${formatCurrency(valorCobrarParaReceberX)}</strong></p>
+                <p>Parcelas: <strong>${num}x de ${formatCurrency(valorCobrarParaReceberX/num)}</strong></p>
+            </div>
+
+            <div style="text-align: center; font-size: 10px; line-height: 1.4; border-top: 1px solid #eee; padding-top: 10px;">
+                <p><strong>Telefone:</strong> (82) 9 9331-2300</p>
+                <p><strong>Instagram:</strong> gilliardcred</p>
+                <p><strong>Endereço:</strong> R. Dr. Rômulo de almeida 144, Vizinho a Magazine Luiza</p>
+                <p>São Miguel dos Campos - AL</p>
+            </div>
         </div>
     `;
     printModal.style.display = 'block';
 }
 
-function generatePDF() {
+async function generatePDF() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'pt', 'a4');
-    const content = document.getElementById('printContent');
+    const captureArea = document.getElementById('capture-area');
+
+    // Usamos html2canvas para garantir que o estilo do banner seja preservado no PDF
+    const canvas = await html2canvas(captureArea, { scale: 2 });
+    const imgData = canvas.toDataURL('image/png');
     
-    doc.html(content, {
-        callback: function (doc) { doc.save('simulacao.pdf'); },
-        x: 40, y: 40, width: 500, windowWidth: 600
-    });
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth() - 20; // margem 10mm
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
+    pdf.save('simulacao_gilliard_cred.pdf');
 }

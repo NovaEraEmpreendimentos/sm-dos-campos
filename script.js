@@ -1,45 +1,35 @@
-/* Fundo da página conforme a imagem */
-body {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #581c87 100%);
-    background-attachment: fixed;
-    min-height: 100vh;
-    color: #fff;
-}
+async function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    
+    // Criamos o PDF
+    const doc = new jsPDF('p', 'mm', 'a4');
+    
+    // Capturamos as informações atuais do card
+    const valorTotal = loanAmountInput.value;
+    const parcelas = installmentsSelect.value;
+    const infoContent = document.getElementById('printContent').innerText;
 
-/* Efeito de Card Translúcido igual à imagem */
-.simulator-card {
-    background: rgba(255, 255, 255, 0.1) !important; /* Translúcido */
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    color: #fff !important; /* Texto branco para ler no fundo escuro */
-}
+    // Configuração do texto no PDF (Organizado em uma única página)
+    doc.setFontSize(22);
+    doc.setTextColor(30, 58, 138); // Azul escuro
+    doc.text("Gilliard Cred - Simulação", 105, 20, { align: "center" });
+    
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Valor da Simulação: R$ ${valorTotal}`, 20, 40);
+    doc.text(`Parcelamento Selecionado: ${parcelas}x`, 20, 50);
+    
+    doc.setLineWidth(0.5);
+    doc.line(20, 55, 190, 55);
 
-/* Ajuste das tabelas para o novo fundo */
-.table-container {
-    background: rgba(0, 0, 0, 0.2) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
+    // Adiciona o detalhamento que aparece no card
+    doc.setFontSize(12);
+    const splitText = doc.splitTextToSize(infoContent, 170);
+    doc.text(splitText, 20, 65);
 
-th {
-    background: rgba(255, 255, 255, 0.1) !important;
-    color: #fff !important;
-}
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Contato: (82) 9 9330-1661 | @gilliardfinanceira", 105, 280, { align: "center" });
 
-td {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-    color: #fff !important;
-}
-
-.highlight {
-    color: #60a5fa !important; /* Azul claro para destaque */
-}
-
-/* Inputs translúcidos */
-input, select {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    color: #fff !important;
+    doc.save("simulacao_gilliard_cred.pdf");
 }
